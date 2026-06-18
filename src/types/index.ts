@@ -74,3 +74,109 @@ export interface ShoeState {
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
 }
+
+export type BuildingType = 'boutique' | 'studio' | 'runway' | 'museum';
+
+export interface ExclusiveShoe {
+  id: string;
+  name: string;
+  imageUrl: string;
+  description: string;
+  rarity: 'common' | 'rare' | 'legendary';
+  heelHeight: number;
+}
+
+export interface DesignElement {
+  id: string;
+  name: string;
+  type: 'material' | 'decoration' | 'color' | 'toeShape' | 'strapStyle';
+  value: string;
+  description: string;
+  unlocked: boolean;
+}
+
+export interface Building {
+  id: string;
+  name: string;
+  type: BuildingType;
+  description: string;
+  x: number;
+  y: number;
+  unlocked: boolean;
+  challengeId?: string;
+  exclusiveShoes: ExclusiveShoe[];
+  designElements: DesignElement[];
+  icon: string;
+}
+
+export interface Challenge {
+  id: string;
+  buildingId: string;
+  title: string;
+  description: string;
+  type: 'design' | 'quiz' | 'collection';
+  rewardCoins: number;
+  unlocksRegion?: string;
+  completed: boolean;
+  requirements: {
+    type: string;
+    target: number;
+    current: number;
+  };
+}
+
+export interface MapRegion {
+  id: string;
+  name: string;
+  description: string;
+  unlocked: boolean;
+  unlockCost: number;
+  buildings: Building[];
+  color: string;
+  position: { x: number; y: number; width: number; height: number };
+}
+
+export interface CharacterPosition {
+  x: number;
+  y: number;
+  moving: boolean;
+  targetBuildingId?: string;
+}
+
+export interface CityMapState {
+  coins: number;
+  unlockedRegions: string[];
+  completedChallenges: string[];
+  unlockedShoes: string[];
+  unlockedElements: string[];
+  currentPosition: CharacterPosition;
+  selectedBuilding: Building | null;
+  selectedChallenge: Challenge | null;
+  showReward: boolean;
+  rewardData: {
+    coins?: number;
+    shoes?: ExclusiveShoe[];
+    elements?: DesignElement[];
+    region?: MapRegion;
+  } | null;
+  regions: MapRegion[];
+  challenges: Challenge[];
+  setCoins: (coins: number) => void;
+  addCoins: (amount: number) => void;
+  unlockRegion: (regionId: string) => boolean;
+  completeChallenge: (challengeId: string) => void;
+  unlockShoe: (shoeId: string) => void;
+  unlockElement: (elementId: string) => void;
+  setCurrentPosition: (position: CharacterPosition) => void;
+  moveToBuilding: (buildingId: string) => void;
+  setSelectedBuilding: (building: Building | null) => void;
+  setSelectedChallenge: (challenge: Challenge | null) => void;
+  showRewardModal: (data: {
+    coins?: number;
+    shoes?: ExclusiveShoe[];
+    elements?: DesignElement[];
+    region?: MapRegion;
+  }) => void;
+  hideRewardModal: () => void;
+  updateChallengeProgress: (challengeId: string, progress: number) => void;
+}

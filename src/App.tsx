@@ -4,6 +4,7 @@ import ShoeDetail from "@/pages/ShoeDetail";
 import Gallery from "@/pages/Gallery";
 import DesignerStudio from "@/pages/DesignerStudio";
 import DesignGallery from "@/pages/DesignGallery";
+import CityMap from "@/pages/CityMap";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/shoe/:id" element={<ShoeDetail />} />
         <Route path="/studio" element={<DesignerStudio />} />
         <Route path="/studio/gallery" element={<DesignGallery />} />
+        <Route path="/city-map" element={<CityMap />} />
       </Routes>
     </Router>
   );

@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import EraNav from '@/components/EraNav';
 import ShoeCard, { ShoeCardSkeleton } from '@/components/ShoeCard';
 import { useShoes } from '@/hooks/useShoes';
-import { Grid3X3, Paintbrush } from 'lucide-react';
+import { Grid3X3, Paintbrush, Map } from 'lucide-react';
 
 const Home = () => {
   const { shoes, eras, loading, error } = useShoes();
@@ -15,7 +15,7 @@ const Home = () => {
       <main className="container pb-24">
         <EraNav eras={eras} loading={loading} />
 
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12 flex-wrap">
           <Link
             to="/gallery"
             className="btn-gold inline-flex items-center gap-2"
@@ -29,6 +29,13 @@ const Home = () => {
           >
             <Paintbrush className="w-4 h-4" />
             <span>设计师工作室</span>
+          </Link>
+          <Link
+            to="/city-map"
+            className="px-6 py-3 border-2 border-museum-gold bg-museum-gold/10 text-museum-gold-dark font-sans text-sm tracking-widest uppercase transition-all duration-300 hover:bg-museum-gold/20 inline-flex items-center gap-2"
+          >
+            <Map className="w-4 h-4" />
+            <span>高跟鞋城市地图</span>
           </Link>
         </div>
 
