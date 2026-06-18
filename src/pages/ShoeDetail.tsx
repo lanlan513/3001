@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useShoeDetail } from '@/hooks/useShoes';
 import BackButton from '@/components/BackButton';
@@ -6,6 +7,7 @@ import { Ruler, Palette, Hammer, MapPin } from 'lucide-react';
 const ShoeDetail = () => {
   const { id } = useParams<{ id: string }>();
   const { shoe, loading, error } = useShoeDetail(id);
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
 
   if (loading) {
     return (
@@ -48,6 +50,14 @@ const ShoeDetail = () => {
 
   const paragraphs = shoe.fullStory.split('\n\n');
 
+  const handleImageError = (index: number) => {
+    setFailedImages((prev) => new Set(prev).add(index));
+  };
+
+  const getImageSrc = (originalSrc: string, index: number) => {
+    return failedImages.has(index) ? shoe.imageUrl : originalSrc;
+  };
+
   return (
     <div className="min-h-screen">
       <div className="container py-12">
@@ -60,9 +70,10 @@ const ShoeDetail = () => {
             <div className="museum-frame mb-6">
               <div className="aspect-square relative overflow-hidden">
                 <img
-                  src={shoe.imageUrl}
+                  src={getImageSrc(shoe.imageUrl, 0)}
                   alt={shoe.name}
                   className="w-full h-full object-cover"
+                  onError={() => handleImageError(0)}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-museum-black/30 via-transparent to-transparent" />
               </div>
@@ -74,9 +85,10 @@ const ShoeDetail = () => {
                   <div key={i} className="museum-frame">
                     <div className="aspect-square overflow-hidden">
                       <img
-                        src={img}
+                        src={getImageSrc(img, i + 1)}
                         alt={`${shoe.name} view ${i + 2}`}
                         className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                        onError={() => handleImageError(i + 1)}
                       />
                     </div>
                   </div>

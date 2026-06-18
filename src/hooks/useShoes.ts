@@ -43,22 +43,19 @@ export const useShoes = () => {
 
   useEffect(() => {
     const fetchFilteredShoes = async () => {
-      if (selectedEra || selectedStyle) {
-        setLoading(true);
-        try {
-          const shoesData = await api.getShoes(selectedEra || undefined, selectedStyle || undefined);
-          setShoes(shoesData);
-        } catch (err) {
-          setError(err instanceof Error ? err.message : 'An error occurred');
-        } finally {
-          setLoading(false);
-        }
+      setLoading(true);
+      setError(null);
+      try {
+        const shoesData = await api.getShoes(selectedEra || undefined, selectedStyle || undefined);
+        setShoes(shoesData);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (selectedEra || selectedStyle) {
-      fetchFilteredShoes();
-    }
+    fetchFilteredShoes();
   }, [selectedEra, selectedStyle, setShoes, setLoading, setError]);
 
   return { shoes, eras, styles, loading, error };
