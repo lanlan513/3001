@@ -1,0 +1,55 @@
+import Header from '@/components/Header';
+import EraNav from '@/components/EraNav';
+import ShoeCard, { ShoeCardSkeleton } from '@/components/ShoeCard';
+import { useShoes } from '@/hooks/useShoes';
+
+const Home = () => {
+  const { shoes, eras, loading, error } = useShoes();
+
+  return (
+    <div className="min-h-screen">
+      <Header />
+
+      <main className="container pb-24">
+        <EraNav eras={eras} loading={loading} />
+
+        {error && (
+          <div className="text-center py-12">
+            <p className="text-museum-burgundy-light font-body text-lg">
+              {error}
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && shoes.length === 0 && (
+          <div className="text-center py-12">
+            <p className="text-museum-gray font-body text-lg">
+              No exhibits found for this selection.
+            </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {loading
+            ? [...Array(9)].map((_, i) => <ShoeCardSkeleton key={i} />)
+            : shoes.map((shoe, index) => (
+                <ShoeCard key={shoe.id} shoe={shoe} index={index} />
+              ))}
+        </div>
+      </main>
+
+      <footer className="border-t border-museum-gold/20 py-12">
+        <div className="container text-center">
+          <p className="font-sans text-xs tracking-[0.3em] text-museum-gray uppercase mb-2">
+            The High Heel Museum
+          </p>
+          <p className="font-body text-sm text-museum-gray-dark">
+            A curated collection of iconic footwear through the decades
+          </p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Home;
