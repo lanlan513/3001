@@ -1,3 +1,30 @@
+export interface DesignerShoeConfig {
+  heelHeight: number;
+  material: string;
+  color: string;
+  decoration: string;
+  toeShape: string;
+  strapStyle: string;
+}
+
+export interface DesignWork {
+  id: string;
+  name: string;
+  config: DesignerShoeConfig;
+  createdAt: number;
+  previewDataUrl: string;
+}
+
+export interface DesignState {
+  currentConfig: DesignerShoeConfig;
+  works: DesignWork[];
+  setCurrentConfig: (config: Partial<DesignerShoeConfig>) => void;
+  resetConfig: () => void;
+  saveWork: (name: string, previewDataUrl: string) => void;
+  deleteWork: (id: string) => void;
+  loadWork: (id: string) => void;
+}
+
 export interface Shoe {
   id: string;
   name: string;
