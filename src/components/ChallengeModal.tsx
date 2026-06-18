@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { X, Coins, Star, Check, ChevronRight, Sparkles } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { X, Coins, Star, Check, ChevronRight, Sparkles, AlertCircle } from 'lucide-react';
 import { useCityMapStore } from '@/store/useCityMapStore';
+import { useDesignStore } from '@/store/useDesignStore';
 import type { Challenge } from '@/types';
 
 interface ChallengeModalProps {
@@ -81,26 +83,28 @@ const quizQuestions: Record<string, { question: string; options: string[]; corre
 
 const ChallengeModal = ({ challenge }: ChallengeModalProps) => {
   const { setSelectedChallenge, completeChallenge, updateChallengeProgress } = useCityMapStore();
+  const { works } = useDesignStore();
   const [step, setStep] = useState<'intro' | 'active' | 'complete'>('intro');
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<number[]>([]);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showResult, setShowResult] = useState(false);
+  const [designCount, setDesignCount] = useState(works.length);
 
   const questions = quizQuestions[challenge.id] || [];
 
+  useEffect(() => {
+    setDesignCount(works.length);
+  }, [works.length]);
+
+  const getRequiredCount = () => challenge.requirements.target;
+
+  const isDesignComplete = designCount >= getRequiredCount();
+
   const handleStart = () => {
-    if (challenge.type === 'design') {
-      completeChallenge(challenge.id);
-      setSelectedChallenge(null);
-      return;
+    if (challenge.type === 'quiz') {
+      setStep('active');
     }
-    if (challenge.type === 'collection') {
-      completeChallenge(challenge.id);
-      setSelectedChallenge(null);
-      return;
-    }
-    setStep('active');
   };
 
   const handleAnswer = (answerIndex: number) => {
@@ -133,6 +137,11 @@ const ChallengeModal = ({ challenge }: ChallengeModalProps) => {
   };
 
   const handleComplete = () => {
+    if (challenge.type === 'design' || challenge.type === 'collection') {
+      if (!isDesignComplete) {
+        return;
+      }
+    }
     completeChallenge(challenge.id);
     setSelectedChallenge(null);
   };
@@ -152,18 +161,60 @@ const ChallengeModal = ({ challenge }: ChallengeModalProps) => {
         <span className="text-5xl">👠</span>
       </div>
       <h4 className="font-display text-2xl text-museum-black mb-4">{challenge.title}</h4>
-      <p className="font-body text-museum-gray-dark mb-6">{challenge.description}</p>
-      <div className="p-4 bg-museum-burgundy/10 rounded-xl mb-6">
-        <p className="font-sans text-sm text-museum-burgundy">
-          🎨 前往设计师工作室完成你的设计，回来后点击下方按钮完成挑战
-        </p>
+      <p className="font-body text-museum-gray-dark mb-4">{challenge.description}</p>
+
+      <div className="p-4 bg-museum-burgundy/10 rounded-xl mb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="font-sans text-lg font-bold text-museum-burgundy">
+            {designCount} / {getRequiredCount()}
+          </span>
+          <span className="font-body text-sm text-museum-gray-dark">双设计已完成</span>
+        </div>
+        <div className="h-3 bg-white rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-museum-burgundy to-museum-burgundy-light transition-all duration-500"
+            style={{
+              width: Math.min((designCount / getRequiredCount()) * 100, 100) + '%',
+            }}
+          />
+        </div>
       </div>
-      <button
-        onClick={handleComplete}
-        className="w-full btn-gold py-3 rounded-lg font-sans text-sm tracking-wider uppercase"
-      >
-        完成挑战
-      </button>
+
+      {isDesignComplete ? (
+        <div className="flex items-center justify-center gap-2 p-3 bg-green-50 rounded-xl mb-4 text-green-700">
+          <Check className="w-5 h-5" />
+          <span className="font-sans text-sm font-semibold">设计数量已达标，可领取奖励</span>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center gap-2 p-3 bg-amber-50 rounded-xl mb-4 text-amber-700">
+          <AlertCircle className="w-5 h-5" />
+          <span className="font-sans text-sm">
+            还需完成 {getRequiredCount() - designCount} 双设计
+          </span>
+        </div>
+      )}
+
+      <div className="flex gap-3 mb-4">
+        <Link
+          to="/studio"
+          onClick={() => setSelectedChallenge(null)}
+          className="flex-1 px-4 py-3 border border-museum-burgundy/50 text-museum-burgundy-light font-sans text-sm tracking-widest uppercase transition-all duration-300 hover:bg-museum-burgundy/20 inline-flex items-center justify-center gap-2 rounded-lg"
+        >
+          <Sparkles className="w-4 h-4" />
+          前往设计室
+        </Link>
+        <button
+          onClick={handleComplete}
+          disabled={!isDesignComplete}
+          className={
+            isDesignComplete
+              ? 'flex-1 btn-gold py-3 rounded-lg font-sans text-sm tracking-wider uppercase'
+              : 'flex-1 bg-museum-gray/30 text-museum-gray-dark cursor-not-allowed py-3 rounded-lg font-sans text-sm tracking-wider uppercase'
+          }
+        >
+          {isDesignComplete ? '完成挑战' : '尚未达标'}
+        </button>
+      </div>
     </div>
   );
 
@@ -173,18 +224,60 @@ const ChallengeModal = ({ challenge }: ChallengeModalProps) => {
         <span className="text-5xl">✨</span>
       </div>
       <h4 className="font-display text-2xl text-museum-black mb-4">{challenge.title}</h4>
-      <p className="font-body text-museum-gray-dark mb-6">{challenge.description}</p>
-      <div className="p-4 bg-museum-gold/10 rounded-xl mb-6">
-        <p className="font-sans text-sm text-museum-gold-dark">
-          👗 在设计工作室完成{challenge.requirements.target}双相关主题设计
-        </p>
+      <p className="font-body text-museum-gray-dark mb-4">{challenge.description}</p>
+
+      <div className="p-4 bg-museum-gold/10 rounded-xl mb-4">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <span className="font-sans text-lg font-bold text-museum-gold-dark">
+            {designCount} / {getRequiredCount()}
+          </span>
+          <span className="font-body text-sm text-museum-gray-dark">双系列设计已完成</span>
+        </div>
+        <div className="h-3 bg-white rounded-full overflow-hidden">
+          <div
+            className="h-full bg-gradient-to-r from-museum-gold to-museum-gold-dark transition-all duration-500"
+            style={{
+              width: Math.min((designCount / getRequiredCount()) * 100, 100) + '%',
+            }}
+          />
+        </div>
       </div>
-      <button
-        onClick={handleComplete}
-        className="w-full btn-gold py-3 rounded-lg font-sans text-sm tracking-wider uppercase"
-      >
-        完成挑战
-      </button>
+
+      {isDesignComplete ? (
+        <div className="flex items-center justify-center gap-2 p-3 bg-green-50 rounded-xl mb-4 text-green-700">
+          <Check className="w-5 h-5" />
+          <span className="font-sans text-sm font-semibold">系列设计已达标，可领取奖励</span>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center gap-2 p-3 bg-amber-50 rounded-xl mb-4 text-amber-700">
+          <AlertCircle className="w-5 h-5" />
+          <span className="font-sans text-sm">
+            还需完成 {getRequiredCount() - designCount} 双设计
+          </span>
+        </div>
+      )}
+
+      <div className="flex gap-3">
+        <Link
+          to="/studio"
+          onClick={() => setSelectedChallenge(null)}
+          className="flex-1 px-4 py-3 border border-museum-gold bg-museum-gold/10 text-museum-gold-dark font-sans text-sm tracking-widest uppercase transition-all duration-300 hover:bg-museum-gold/20 inline-flex items-center justify-center gap-2 rounded-lg"
+        >
+          <Sparkles className="w-4 h-4" />
+          前往设计室
+        </Link>
+        <button
+          onClick={handleComplete}
+          disabled={!isDesignComplete}
+          className={
+            isDesignComplete
+              ? 'flex-1 btn-gold py-3 rounded-lg font-sans text-sm tracking-wider uppercase'
+              : 'flex-1 bg-museum-gray/30 text-museum-gray-dark cursor-not-allowed py-3 rounded-lg font-sans text-sm tracking-wider uppercase'
+          }
+        >
+          {isDesignComplete ? '完成挑战' : '尚未达标'}
+        </button>
+      </div>
     </div>
   );
 
@@ -214,22 +307,32 @@ const ChallengeModal = ({ challenge }: ChallengeModalProps) => {
           </div>
         </div>
 
-        <h4 className="font-display text-xl text-museum-black mb-6">{q.question}</h4>
+        <h4 className="font-display text-xl text-museum-black mb-6 font-semibold">{q.question}</h4>
 
         <div className="space-y-3">
           {q.options.map((option, index) => {
-            let optionClass = 'bg-white/50 border-museum-gold/30 hover:border-museum-gold hover:bg-museum-gold/5';
-            
+            let bgClass = 'bg-white';
+            let borderClass = 'border-museum-gold/40';
+            let textClass = 'text-museum-black';
+
             if (showResult) {
               if (index === q.correct) {
-                optionClass = 'bg-green-50 border-green-500 text-green-700';
+                bgClass = 'bg-green-100';
+                borderClass = 'border-green-500';
+                textClass = 'text-green-800';
               } else if (index === selectedAnswer && index !== q.correct) {
-                optionClass = 'bg-red-50 border-red-500 text-red-700';
+                bgClass = 'bg-red-100';
+                borderClass = 'border-red-500';
+                textClass = 'text-red-800';
               } else {
-                optionClass = 'bg-white/30 border-museum-gray/20 opacity-50';
+                bgClass = 'bg-gray-100';
+                borderClass = 'border-gray-300';
+                textClass = 'text-gray-500';
               }
             } else if (selectedAnswer === index) {
-              optionClass = 'bg-museum-gold/20 border-museum-gold';
+              bgClass = 'bg-museum-gold/20';
+              borderClass = 'border-museum-gold';
+              textClass = 'text-museum-black';
             }
 
             return (
@@ -237,14 +340,40 @@ const ChallengeModal = ({ challenge }: ChallengeModalProps) => {
                 key={index}
                 onClick={() => !showResult && handleAnswer(index)}
                 disabled={showResult}
-                className={`w-full p-4 rounded-xl border text-left font-body transition-all ${optionClass} ${
-                  showResult ? 'cursor-default' : 'cursor-pointer'
-                }`}
+                className={
+                  'w-full p-4 rounded-xl border-2 text-left font-body text-base font-medium transition-all ' +
+                  bgClass +
+                  ' ' +
+                  borderClass +
+                  ' ' +
+                  textClass +
+                  ' ' +
+                  (showResult
+                    ? 'cursor-default '
+                    : 'cursor-pointer hover:shadow-md ' +
+                      (selectedAnswer !== index ? 'hover:border-museum-gold hover:bg-museum-gold/10 ' : ''))
+                }
               >
-                <div className="flex items-center justify-between">
-                  <span>{option}</span>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={
+                        'w-7 h-7 rounded-full flex items-center justify-center text-sm font-sans font-bold flex-shrink-0 ' +
+                        (showResult && index === q.correct
+                          ? 'bg-green-500 text-white'
+                          : showResult && index === selectedAnswer && index !== q.correct
+                          ? 'bg-red-500 text-white'
+                          : selectedAnswer === index
+                          ? 'bg-museum-gold text-white'
+                          : 'bg-museum-gray/20 text-museum-gray-dark')
+                      }
+                    >
+                      {String.fromCharCode(65 + index)}
+                    </span>
+                    <span>{option}</span>
+                  </div>
                   {showResult && index === q.correct && (
-                    <Check className="w-5 h-5 text-green-500" />
+                    <Check className="w-6 h-6 text-green-600 flex-shrink-0" />
                   )}
                 </div>
               </button>
