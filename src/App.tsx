@@ -5,6 +5,7 @@ import Gallery from "@/pages/Gallery";
 import DesignerStudio from "@/pages/DesignerStudio";
 import DesignGallery from "@/pages/DesignGallery";
 import CityMap from "@/pages/CityMap";
+import Kingdom from "@/pages/Kingdom";
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
         <Route path="/studio" element={<DesignerStudio />} />
         <Route path="/studio/gallery" element={<DesignGallery />} />
         <Route path="/city-map" element={<CityMap />} />
+        <Route path="/kingdom" element={<Kingdom />} />
       </Routes>
     </Router>
   );

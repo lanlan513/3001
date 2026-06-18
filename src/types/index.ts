@@ -143,6 +143,96 @@ export interface CharacterPosition {
   targetBuildingId?: string;
 }
 
+export type ShoeStyle = 'classic' | 'modern' | 'vintage' | 'avant-garde' | 'minimalist' | 'glamorous' | 'romantic' | 'edgy';
+export type ShoeSeason = 'spring' | 'summer' | 'autumn' | 'winter';
+export type ProductQuality = 'standard' | 'premium' | 'luxury';
+
+export interface ProductDesign extends DesignerShoeConfig {
+  style: ShoeStyle;
+  season: ShoeSeason;
+  quality: ProductQuality;
+  name: string;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  design: ProductDesign;
+  productionCost: number;
+  sellingPrice: number;
+  stock: number;
+  totalProduced: number;
+  totalSold: number;
+  totalRevenue: number;
+  popularityScore: number;
+  isActive: boolean;
+  createdAt: number;
+  previewDataUrl?: string;
+}
+
+export interface MarketTrend {
+  style: ShoeStyle;
+  popularity: number;
+  trend: 'rising' | 'stable' | 'falling';
+  remainingDays: number;
+}
+
+export interface FashionShow {
+  id: string;
+  name: string;
+  season: ShoeSeason;
+  budget: number;
+  products: string[];
+  date: number;
+  marketingReach: number;
+  success: boolean | null;
+  revenueBoost: number;
+  buzzGenerated: number;
+}
+
+export interface DailySalesRecord {
+  day: number;
+  productId: string;
+  unitsSold: number;
+  revenue: number;
+}
+
+export interface CompanyState {
+  companyName: string;
+  companyReputation: number;
+  money: number;
+  currentDay: number;
+  currentSeason: ShoeSeason;
+  products: Product[];
+  marketTrends: MarketTrend[];
+  fashionShows: FashionShow[];
+  dailySales: DailySalesRecord[];
+  totalRevenue: number;
+  totalProfit: number;
+  monthlyRent: number;
+  storageCapacity: number;
+  activeProductIds: string[];
+  showHistory: {
+    day: number;
+    event: string;
+    type: 'sale' | 'trend' | 'show' | 'warning' | 'success';
+  }[];
+
+  setCompanyName: (name: string) => void;
+  addMoney: (amount: number) => void;
+  spendMoney: (amount: number) => boolean;
+  advanceDay: () => void;
+  createProduct: (name: string, design: ProductDesign, previewDataUrl?: string) => Product | null;
+  setProductPrice: (productId: string, price: number) => void;
+  produceUnits: (productId: string, quantity: number) => boolean;
+  toggleProductActive: (productId: string) => void;
+  deleteProduct: (productId: string) => void;
+  hostFashionShow: (name: string, season: ShoeSeason, budget: number, productIds: string[]) => FashionShow | null;
+  updateReputation: (delta: number) => void;
+  addHistory: (event: string, type: 'sale' | 'trend' | 'show' | 'warning' | 'success') => void;
+  resetGame: () => void;
+}
+
 export interface CityMapState {
   coins: number;
   unlockedRegions: string[];

@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import EraNav from '@/components/EraNav';
 import ShoeCard, { ShoeCardSkeleton } from '@/components/ShoeCard';
 import { useShoes } from '@/hooks/useShoes';
-import { Grid3X3, Paintbrush, Map } from 'lucide-react';
+import { Grid3X3, Paintbrush, Map, Crown } from 'lucide-react';
 
 const Home = () => {
   const { shoes, eras, loading, error } = useShoes();
@@ -36,6 +36,13 @@ const Home = () => {
           >
             <Map className="w-4 h-4" />
             <span>高跟鞋城市地图</span>
+          </Link>
+          <Link
+            to="/kingdom"
+            className="px-6 py-3 bg-gradient-to-r from-museum-gold-dark to-museum-gold text-museum-black font-sans text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:shadow-museum-gold/30 hover:scale-105 inline-flex items-center gap-2"
+          >
+            <Crown className="w-4 h-4" />
+            <span>👑 高跟鞋王国</span>
           </Link>
         </div>
 
