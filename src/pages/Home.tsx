@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import EraNav from '@/components/EraNav';
 import ShoeCard, { ShoeCardSkeleton } from '@/components/ShoeCard';
 import { useShoes } from '@/hooks/useShoes';
+import { Grid3X3 } from 'lucide-react';
 
 const Home = () => {
   const { shoes, eras, loading, error } = useShoes();
@@ -12,6 +14,16 @@ const Home = () => {
 
       <main className="container pb-24">
         <EraNav eras={eras} loading={loading} />
+
+        <div className="flex justify-center mb-12">
+          <Link
+            to="/gallery"
+            className="btn-gold inline-flex items-center gap-2"
+          >
+            <Grid3X3 className="w-4 h-4" />
+            <span>浏览完整图鉴</span>
+          </Link>
+        </div>
 
         {error && (
           <div className="text-center py-12">
