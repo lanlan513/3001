@@ -8,6 +8,7 @@ import CityMap from "@/pages/CityMap";
 import Kingdom from "@/pages/Kingdom";
 import ExhibitionHall from "@/pages/ExhibitionHall";
 import FashionMagazine from "@/pages/FashionMagazine";
+import ArchaeologyPlan from "@/pages/ArchaeologyPlan";
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Route path="/kingdom" element={<Kingdom />} />
         <Route path="/exhibition" element={<ExhibitionHall />} />
         <Route path="/magazine" element={<FashionMagazine />} />
+        <Route path="/archaeology" element={<ArchaeologyPlan />} />
       </Routes>
     </Router>
   );

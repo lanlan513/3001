@@ -320,3 +320,93 @@ export interface CityMapState {
   hideRewardModal: () => void;
   updateChallengeProgress: (challengeId: string, progress: number) => void;
 }
+
+export type PuzzleType = 'sequence' | 'riddle' | 'combination' | 'pattern';
+
+export interface ArchaeologyClue {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  found: boolean;
+  roomId: string;
+  detail: string;
+}
+
+export interface ArchaeologyPuzzle {
+  id: string;
+  name: string;
+  description: string;
+  type: PuzzleType;
+  solved: boolean;
+  hints: string[];
+  options: string[];
+  correctAnswer: string;
+  storyFragment: string;
+}
+
+export interface ArchaeologyReward {
+  designName: string;
+  designDescription: string;
+  designImageUrl: string;
+  designEra: string;
+  storyFragment: string;
+}
+
+export interface ArchaeologyRoom {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  explored: boolean;
+  x: number;
+  y: number;
+  clues: ArchaeologyClue[];
+  puzzle: ArchaeologyPuzzle;
+  reward: ArchaeologyReward;
+  locked: boolean;
+  requiredClueIds: string[];
+}
+
+export interface ArchaeologyLocation {
+  id: string;
+  name: string;
+  subtitle: string;
+  description: string;
+  era: string;
+  icon: string;
+  color: string;
+  accentColor: string;
+  imageUrl: string;
+  unlocked: boolean;
+  unlockCost: number;
+  rooms: ArchaeologyRoom[];
+  historicalStory: string;
+}
+
+export interface ArchaeologyState {
+  locations: ArchaeologyLocation[];
+  foundClueIds: string[];
+  solvedPuzzleIds: string[];
+  unlockedDesignIds: string[];
+  selectedLocationId: string | null;
+  selectedRoomId: string | null;
+  activePuzzleId: string | null;
+  showReward: boolean;
+  currentReward: ArchaeologyReward | null;
+  showStory: boolean;
+  currentStory: string | null;
+  foundClue: (locationId: string, roomId: string, clueId: string) => void;
+  solvePuzzle: (locationId: string, roomId: string) => void;
+  unlockLocation: (locationId: string) => boolean;
+  exploreRoom: (locationId: string, roomId: string) => void;
+  setSelectedLocation: (locationId: string | null) => void;
+  setSelectedRoom: (roomId: string | null) => void;
+  setActivePuzzle: (puzzleId: string | null) => void;
+  showRewardModal: (reward: ArchaeologyReward) => void;
+  hideRewardModal: () => void;
+  showStoryModal: (story: string) => void;
+  hideStoryModal: () => void;
+  canUnlockRoom: (locationId: string, roomId: string) => boolean;
+  getLocationProgress: (locationId: string) => { rooms: string; clues: string; puzzles: string };
+}

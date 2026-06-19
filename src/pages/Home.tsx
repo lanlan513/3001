@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import EraNav from '@/components/EraNav';
 import ShoeCard, { ShoeCardSkeleton } from '@/components/ShoeCard';
 import { useShoes } from '@/hooks/useShoes';
-import { Grid3X3, Paintbrush, Map, Crown, Sparkles, BookOpen } from 'lucide-react';
+import { Grid3X3, Paintbrush, Map, Crown, Sparkles, BookOpen, Compass } from 'lucide-react';
 
 const Home = () => {
   const { shoes, eras, loading, error } = useShoes();
@@ -57,6 +57,13 @@ const Home = () => {
           >
             <BookOpen className="w-4 h-4" />
             <span>📰 时尚杂志社</span>
+          </Link>
+          <Link
+            to="/archaeology"
+            className="px-6 py-3 bg-gradient-to-r from-amber-900 to-amber-700 text-white font-sans text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/30 hover:scale-105 inline-flex items-center gap-2 animate-pulse"
+          >
+            <Compass className="w-4 h-4" />
+            <span>🏺 高跟鞋考古计划</span>
           </Link>
         </div>
 
