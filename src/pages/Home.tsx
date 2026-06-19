@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import EraNav from '@/components/EraNav';
 import ShoeCard, { ShoeCardSkeleton } from '@/components/ShoeCard';
 import { useShoes } from '@/hooks/useShoes';
-import { Grid3X3, Paintbrush, Map, Crown, Sparkles } from 'lucide-react';
+import { Grid3X3, Paintbrush, Map, Crown, Sparkles, BookOpen } from 'lucide-react';
 
 const Home = () => {
   const { shoes, eras, loading, error } = useShoes();
@@ -50,6 +50,13 @@ const Home = () => {
           >
             <Sparkles className="w-4 h-4" />
             <span>✨ 3D珍品展区</span>
+          </Link>
+          <Link
+            to="/magazine"
+            className="px-6 py-3 bg-gradient-to-r from-purple-900 to-museum-burgundy text-white font-sans text-sm tracking-widest uppercase transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30 hover:scale-105 inline-flex items-center gap-2"
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>📰 时尚杂志社</span>
           </Link>
         </div>
 

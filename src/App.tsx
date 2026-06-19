@@ -7,6 +7,7 @@ import DesignGallery from "@/pages/DesignGallery";
 import CityMap from "@/pages/CityMap";
 import Kingdom from "@/pages/Kingdom";
 import ExhibitionHall from "@/pages/ExhibitionHall";
+import FashionMagazine from "@/pages/FashionMagazine";
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Route path="/city-map" element={<CityMap />} />
         <Route path="/kingdom" element={<Kingdom />} />
         <Route path="/exhibition" element={<ExhibitionHall />} />
+        <Route path="/magazine" element={<FashionMagazine />} />
       </Routes>
     </Router>
   );

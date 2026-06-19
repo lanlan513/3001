@@ -233,6 +233,56 @@ export interface CompanyState {
   resetGame: () => void;
 }
 
+export type MagazineNewsCategory = 'trend' | 'industry' | 'culture' | 'scandal' | 'innovation';
+
+export interface FashionNews {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  category: MagazineNewsCategory;
+  relatedStyle?: ShoeStyle;
+  impact?: 'positive' | 'negative' | 'neutral';
+  day: number;
+  imageUrl?: string;
+}
+
+export interface TrendEvent {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  affectedStyles: ShoeStyle[];
+  demandMultiplier: number;
+  duration: number;
+  remainingDays: number;
+  intensity: 'minor' | 'moderate' | 'major';
+}
+
+export interface MagazineCover {
+  id: string;
+  issueNumber: number;
+  title: string;
+  subtitle: string;
+  productId?: string;
+  productPreviewUrl?: string;
+  publishDay: number;
+  featuredNewsIds: string[];
+  trendEventId?: string;
+}
+
+export interface FashionMagazineState {
+  news: FashionNews[];
+  trendEvents: TrendEvent[];
+  covers: MagazineCover[];
+  issueCounter: number;
+  lastNewsDay: number;
+  generateDailyNews: (day: number, season: ShoeSeason, marketTrends: MarketTrend[], products: Product[]) => void;
+  updateTrendEvents: () => void;
+  checkCoverEligibility: (products: Product[], marketTrends: MarketTrend[]) => MagazineCover | null;
+  reset: () => void;
+}
+
 export interface CityMapState {
   coins: number;
   unlockedRegions: string[];

@@ -12,6 +12,7 @@ import {
   ArrowLeft,
   Play,
   TrendingUp,
+  BookOpen,
 } from 'lucide-react';
 import { useCompanyStore } from '@/store/useCompanyStore';
 import OverviewTab from '@/components/kingdom/OverviewTab';
@@ -164,26 +165,38 @@ export default function Kingdom() {
       <nav className="border-b border-museum-gold/10 sticky top-0 bg-museum-black/95 backdrop-blur z-40">
         <div className="container">
           <div className="flex overflow-x-auto gap-1 py-2 scrollbar-hide">
-            {[
-              { id: 'overview', label: '总览', icon: <Crown className="w-4 h-4" /> },
-              { id: 'design', label: '设计', icon: <Sparkles className="w-4 h-4" /> },
-              { id: 'products', label: '产品', icon: <ShoppingBag className="w-4 h-4" /> },
-              { id: 'market', label: '市场趋势', icon: <TrendingUp className="w-4 h-4" /> },
-              { id: 'shows', label: '发布会', icon: <Mic2 className="w-4 h-4" /> },
-              { id: 'history', label: '动态', icon: <History className="w-4 h-4" /> },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as TabType)}
-                className={`flex items-center gap-2 px-4 py-3 font-sans text-sm tracking-wider whitespace-nowrap transition-all border-b-2 ${
-                  activeTab === tab.id
-                    ? 'text-museum-gold border-museum-gold'
-                    : 'text-museum-gray border-transparent hover:text-museum-ivory'
-                }`}
-              >
-                {tab.icon}
-                <span>{tab.label}</span>
-              </button>
+            {([
+              { id: 'overview', label: '总览', icon: <Crown className="w-4 h-4" />, link: undefined as string | undefined },
+              { id: 'design', label: '设计', icon: <Sparkles className="w-4 h-4" />, link: undefined as string | undefined },
+              { id: 'products', label: '产品', icon: <ShoppingBag className="w-4 h-4" />, link: undefined as string | undefined },
+              { id: 'market', label: '市场趋势', icon: <TrendingUp className="w-4 h-4" />, link: undefined as string | undefined },
+              { id: 'shows', label: '发布会', icon: <Mic2 className="w-4 h-4" />, link: undefined as string | undefined },
+              { id: 'history', label: '动态', icon: <History className="w-4 h-4" />, link: undefined as string | undefined },
+              { id: 'magazine', label: '杂志', icon: <BookOpen className="w-4 h-4" />, link: '/magazine' as string | undefined },
+            ] as { id: string; label: string; icon: React.ReactNode; link: string | undefined }[]).map((tab) => (
+              tab.link ? (
+                <Link
+                  key={tab.id}
+                  to={tab.link}
+                  className="flex items-center gap-2 px-4 py-3 font-sans text-sm tracking-wider whitespace-nowrap transition-all border-b-2 text-museum-gray border-transparent hover:text-museum-ivory"
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </Link>
+              ) : (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as TabType)}
+                  className={`flex items-center gap-2 px-4 py-3 font-sans text-sm tracking-wider whitespace-nowrap transition-all border-b-2 ${
+                    activeTab === tab.id
+                      ? 'text-museum-gold border-museum-gold'
+                      : 'text-museum-gray border-transparent hover:text-museum-ivory'
+                  }`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              )
             ))}
           </div>
         </div>

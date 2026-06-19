@@ -9,6 +9,7 @@ import type {
   MarketTrend,
   FashionShow,
 } from '@/types';
+import { useFashionMagazineStore } from '@/store/useFashionMagazineStore';
 
 const ALL_STYLES: ShoeStyle[] = [
   'classic',
@@ -178,11 +179,17 @@ export const useCompanyStore = create<CompanyState>()(
           );
           const reputationFactor = 0.5 + state.companyReputation / 100;
 
+          const magazineStore = useFashionMagazineStore.getState();
+          const trendEventBoost = magazineStore.trendEvents.find((e) =>
+            e.affectedStyles.includes(product.design.style)
+          );
+          const trendEventMultiplier = trendEventBoost ? trendEventBoost.demandMultiplier : 1;
+
           const baseDemand = 3;
           const demand = Math.max(
             0,
             Math.floor(
-              baseDemand * styleMatch * seasonMatch * priceFactor * reputationFactor + Math.random() * 3
+              baseDemand * styleMatch * seasonMatch * priceFactor * reputationFactor * trendEventMultiplier + Math.random() * 3
             )
           );
 
@@ -258,11 +265,44 @@ export const useCompanyStore = create<CompanyState>()(
           updatedReputation = Math.max(0, updatedReputation - 0.5);
         }
 
+        const updatedProducts = newProducts;
+        const updatedTrends = newTrends;
+
+        useFashionMagazineStore.getState().generateDailyNews(
+          newDay,
+          newSeason,
+          updatedTrends,
+          updatedProducts
+        );
+
+        const coverResult = useFashionMagazineStore.getState().checkCoverEligibility(
+          updatedProducts,
+          updatedTrends
+        );
+        if (coverResult) {
+          newHistory.unshift({
+            day: newDay,
+            event: `📰 你的设计登上了《Stiletto Weekly》第${coverResult.issueNumber}期封面！`,
+            type: 'success',
+          });
+          updatedReputation = Math.min(100, updatedReputation + 3);
+        }
+
+        const activeMagazineEvents = useFashionMagazineStore.getState().trendEvents;
+        if (activeMagazineEvents.length > 0) {
+          const eventNames = activeMagazineEvents.map((e) => e.name).join('、');
+          newHistory.unshift({
+            day: newDay,
+            event: `📰 时尚热点：${eventNames}`,
+            type: 'trend',
+          });
+        }
+
         set({
           currentDay: newDay,
           currentSeason: newSeason,
-          marketTrends: newTrends,
-          products: newProducts,
+          marketTrends: updatedTrends,
+          products: updatedProducts,
           dailySales: [...state.dailySales, ...newSalesRecords],
           money: Math.max(0, state.money + dailyRevenue - rentPaid),
           totalRevenue: state.totalRevenue + dailyRevenue,
