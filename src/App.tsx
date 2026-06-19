@@ -6,6 +6,7 @@ import DesignerStudio from "@/pages/DesignerStudio";
 import DesignGallery from "@/pages/DesignGallery";
 import CityMap from "@/pages/CityMap";
 import Kingdom from "@/pages/Kingdom";
+import ExhibitionHall from "@/pages/ExhibitionHall";
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/studio/gallery" element={<DesignGallery />} />
         <Route path="/city-map" element={<CityMap />} />
         <Route path="/kingdom" element={<Kingdom />} />
+        <Route path="/exhibition" element={<ExhibitionHall />} />
       </Routes>
     </Router>
   );
