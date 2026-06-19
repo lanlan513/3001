@@ -19,6 +19,8 @@ export default function ArchaeologyPlan() {
     foundClueIds,
     solvedPuzzleIds,
     unlockedDesignIds,
+    unlockLocation,
+    getLocationProgress,
   } = useArchaeologyStore();
 
   const selectedLocation = locations.find((l) => l.id === selectedLocationId);
@@ -110,13 +112,30 @@ export default function ArchaeologyPlan() {
         {!selectedLocation ? (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {locations.map((location) => (
-                <LocationCard
-                  key={location.id}
-                  location={location}
-                  onClick={() => setSelectedLocation(location.id)}
-                />
-              ))}
+              {locations.map((location, index) => {
+                const prevLocation = index > 0 ? locations[index - 1] : null;
+                const prevProgress = prevLocation ? getLocationProgress(prevLocation.id) : null;
+                const prevSolved = prevProgress ? parseInt(prevProgress.puzzles.split('/')[0]) : 0;
+                const prevTotal = prevProgress ? parseInt(prevProgress.puzzles.split('/')[1]) : 0;
+                const prevComplete = prevProgress ? prevSolved >= prevTotal : false;
+                const canUnlock = !location.unlocked && (!prevLocation || prevComplete);
+                const unlockRequirement = prevLocation
+                  ? `完成「${prevLocation.name}」的全部谜题后解锁`
+                  : '';
+
+                return (
+                  <LocationCard
+                    key={location.id}
+                    location={location}
+                    unlockRequirement={unlockRequirement}
+                    canUnlock={canUnlock}
+                    onClick={() => {
+                      if (location.unlocked) setSelectedLocation(location.id);
+                    }}
+                    onUnlock={() => unlockLocation(location.id)}
+                  />
+                );
+              })}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

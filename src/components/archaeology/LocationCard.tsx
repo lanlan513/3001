@@ -4,20 +4,37 @@ import { Lock, MapPin, Footprints, Puzzle } from 'lucide-react';
 
 interface LocationCardProps {
   location: ArchaeologyLocation;
+  unlockRequirement: string;
+  canUnlock: boolean;
   onClick: () => void;
+  onUnlock: () => void;
 }
 
-export default function LocationCard({ location, onClick }: LocationCardProps) {
+export default function LocationCard({ location, unlockRequirement, canUnlock, onClick, onUnlock }: LocationCardProps) {
   const getLocationProgress = useArchaeologyStore((s) => s.getLocationProgress);
   const progress = getLocationProgress(location.id);
   const solvedCount = progress.puzzles.split('/')[0];
   const totalPuzzles = progress.puzzles.split('/')[1];
   const isComplete = solvedCount === totalPuzzles;
 
+  const handleClick = () => {
+    if (!location.unlocked) {
+      if (canUnlock) onUnlock();
+      return;
+    }
+    onClick();
+  };
+
   return (
-    <button
-      onClick={onClick}
-      className="group relative w-full overflow-hidden rounded-2xl transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl text-left"
+    <div
+      onClick={handleClick}
+      className={`group relative w-full overflow-hidden rounded-2xl transition-all duration-500 text-left ${
+        location.unlocked
+          ? 'hover:scale-[1.02] hover:shadow-2xl cursor-pointer'
+          : canUnlock
+          ? 'hover:scale-[1.01] hover:shadow-lg cursor-pointer'
+          : 'cursor-not-allowed'
+      }`}
     >
       <div
         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
@@ -26,21 +43,33 @@ export default function LocationCard({ location, onClick }: LocationCardProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/20" />
 
       {!location.unlocked && (
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
-          <div className="text-center">
-            <Lock className="w-10 h-10 text-museum-gold mx-auto mb-2" />
-            <p className="font-sans text-sm text-museum-gold tracking-wider">需要解锁</p>
+        <div className={`absolute inset-0 flex items-center justify-center z-20 ${canUnlock ? 'bg-black/50' : 'bg-black/70'}`}>
+          <div className="text-center px-4">
+            <Lock className={`w-10 h-10 mx-auto mb-3 ${canUnlock ? 'text-green-400' : 'text-museum-gold/60'}`} />
+            {canUnlock ? (
+              <>
+                <p className="font-sans text-sm text-green-400 tracking-wider mb-3">条件已满足</p>
+                <div className="px-4 py-2 bg-green-500/20 border border-green-500/40 rounded-lg text-green-400 font-sans text-xs tracking-wider hover:bg-green-500/30 transition-all">
+                  点击解锁
+                </div>
+              </>
+            ) : (
+              <>
+                <p className="font-sans text-sm text-museum-gold/80 tracking-wider mb-2">尚未解锁</p>
+                <p className="font-sans text-xs text-museum-gold/50 tracking-wider">{unlockRequirement}</p>
+              </>
+            )}
           </div>
         </div>
       )}
 
-      {isComplete && (
+      {location.unlocked && isComplete && (
         <div className="absolute top-4 right-4 z-10 px-3 py-1 bg-green-500/80 rounded-full text-white font-sans text-xs tracking-wider flex items-center gap-1">
           <span>✓</span> 已完成
         </div>
       )}
 
-      <div className="relative z-10 p-6 pt-32 md:pt-48">
+      <div className={`relative ${location.unlocked ? 'z-10' : 'z-0 opacity-60'} p-6 pt-32 md:pt-48`}>
         <div className="flex items-center gap-2 mb-2">
           <span className="text-2xl">{location.icon}</span>
           <span
@@ -87,6 +116,6 @@ export default function LocationCard({ location, onClick }: LocationCardProps) {
           />
         </div>
       </div>
-    </button>
+    </div>
   );
 }
